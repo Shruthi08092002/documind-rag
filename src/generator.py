@@ -1,4 +1,4 @@
-from langchain_community.llms import Ollama
+from langchain_ollama import OllamaLLM
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
@@ -20,7 +20,7 @@ def get_llm():
     """
     print(f"Connecting to Ollama — loading {LLM_MODEL}...")
 
-    llm = Ollama(
+    llm = OllamaLLM(
         model=LLM_MODEL,
         temperature=0.1,   # Low temperature = more factual, less creative
                            # Good for RAG where we want accurate answers
