@@ -1,0 +1,9 @@
+[
+  {
+    "config": "baseline_k3",
+    "num_questions": 20,
+    "faithfulness": 0.854,
+    "answer_relevancy": 0.435,
+    "context_recall": 0.507
+  }
+]
