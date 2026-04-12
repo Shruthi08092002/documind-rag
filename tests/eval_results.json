@@ -5,5 +5,23 @@
     "faithfulness": 0.854,
     "answer_relevancy": 0.435,
     "context_recall": 0.507
+  },
+  {
+    "config": "experiment_k5",
+    "k": 5,
+    "search_type": "similarity",
+    "num_questions": 20,
+    "faithfulness": 0.9,
+    "answer_relevancy": 0.442,
+    "context_recall": 0.543
+  },
+  {
+    "config": "experiment_mmr",
+    "k": 3,
+    "search_type": "mmr",
+    "num_questions": 20,
+    "faithfulness": 0.776,
+    "answer_relevancy": 0.442,
+    "context_recall": 0.376
   }
 ]

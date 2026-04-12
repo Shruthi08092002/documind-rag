@@ -1,54 +1,55 @@
+import warnings
+warnings.filterwarnings("ignore")
+
 from pathlib import Path
 from src.embedder import load_vector_store, get_embedding_function
 
-def get_retriever(k: int = 3):
+
+def get_retriever(k: int = 3, search_type: str = "similarity"):
     """
-    Builds and returns a retriever object.
+    Builds and returns a retriever.
 
-    What is a retriever?
-    It's a wrapper around ChromaDB that knows how to:
-    1. Take a plain text question
-    2. Embed it using the same model we used for chunks
-    3. Find the k most similar chunks
-    4. Return them as LangChain Document objects
-
-    Why k=3?
-    3 chunks gives enough context without overwhelming the LLM.
-    Too many chunks = LLM gets confused by too much information.
-    Too few = LLM might miss key details.
-    We'll experiment with this in Day 2.
+    search_type options:
+    - "similarity" — standard cosine similarity search
+    - "mmr" — Maximum Marginal Relevance
+      finds relevant AND diverse chunks
+      avoids returning 3 chunks that all say the same thing
     """
     vectorstore = load_vector_store()
 
     if vectorstore is None:
-        print("Could not load vector store.")
+        print("❌ Could not load vector store.")
         return None
 
-    retriever = vectorstore.as_retriever(
-        search_type="similarity",
-        search_kwargs={"k": k}
-    )
+    if search_type == "mmr":
+        retriever = vectorstore.as_retriever(
+            search_type="mmr",
+            search_kwargs={"k": k, "fetch_k": k * 3}
+        )
+    else:
+        retriever = vectorstore.as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": k}
+        )
 
-    print(f"Retriever ready — will return top {k} chunks per query")
+    print(f"✅ Retriever ready — {search_type}, top {k} chunks")
     return retriever
 
 
-def retrieve(question: str, k: int = 3) -> list:
+def retrieve(question: str, k: int = 3, search_type: str = "similarity") -> list:
     """
     Takes a question, finds the most relevant chunks.
-    Returns a list of Document objects with text + metadata.
-
-    This is the function our generator will call.
+    Returns a list of Document objects.
     """
-    print(f"\nSearching for: '{question}'")
+    print(f"\n🔍 Searching for: '{question}'")
 
-    retriever = get_retriever(k=k)
+    retriever = get_retriever(k=k, search_type=search_type)
     if retriever is None:
         return []
 
     docs = retriever.invoke(question)
 
-    print(f"\nFound {len(docs)} relevant chunks:\n")
+    print(f"\n📄 Found {len(docs)} relevant chunks:\n")
     for i, doc in enumerate(docs):
         print(f"  Chunk {i+1}:")
         print(f"  Source: {doc.metadata.get('source', 'unknown')}")
