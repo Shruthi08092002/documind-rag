@@ -1,4 +1,5 @@
 import warnings
+from pathlib import Path 
 warnings.filterwarnings("ignore")
 
 import streamlit as st
@@ -18,6 +19,40 @@ st.divider()
 
 # --- Sidebar ---
 with st.sidebar:
+    st.header("Upload documents")
+
+    uploaded_files = st.file_uploader(
+        "Upload PDF or text files",
+        type=["pdf", "txt", "md"],
+        accept_multiple_files=True
+    )
+
+    if uploaded_files:
+        if st.button("Index uploaded documents", type="primary"):
+            with st.spinner("Indexing documents..."):
+                try:
+                    raw_path = Path("data/raw")
+                    raw_path.mkdir(parents=True, exist_ok=True)
+
+                    for file in uploaded_files:
+                        save_path = raw_path / file.name
+                        with open(save_path, "wb") as f:
+                            f.write(file.getbuffer())
+
+                    from src.ingestor import ingest
+                    from src.embedder import build_vector_store, get_embedding_function
+
+                    chunks = ingest(raw_path)
+                    embedding_fn = get_embedding_function()
+                    build_vector_store(chunks, embedding_fn)
+
+                    st.success(f"Indexed {len(uploaded_files)} document(s) — {len(chunks)} chunks!")
+                    st.rerun()
+
+                except Exception as e:
+                    st.error(f"Error indexing: {e}")
+
+    st.divider()
     st.header("About")
     st.markdown("""
     **DocuMind** is a local RAG pipeline that answers
@@ -28,11 +63,6 @@ with st.sidebar:
     - sentence-transformers embeddings
     - Mistral 7B via Ollama
     - RAGAS evaluation
-
-    **How it works:**
-    1. Your question is embedded into a vector
-    2. ChromaDB finds the 3 most similar chunks
-    3. Mistral generates an answer from those chunks
     """)
 
     st.divider()
@@ -42,8 +72,14 @@ with st.sidebar:
         vs = load_vector_store()
         count = vs._collection.count()
         st.success(f"{count} chunks indexed")
+
+        raw_files = list(Path("data/raw").iterdir())
+        if raw_files:
+            st.caption("Documents:")
+            for f in raw_files:
+                st.caption(f"📄 {f.name}")
     except Exception:
-        st.error("Could not load vector store")
+        st.warning("No documents indexed yet. Upload some above!")
 
     st.divider()
     st.header("Try asking")
@@ -52,7 +88,7 @@ with st.sidebar:
     - What is Grad-CAM?
     - What ethical challenges does AI face?
     - What is the EchoNet dataset?
-    - What are the main tasks in medical image analysis?
+    - Summarise this document
     """)
 
 # --- Chat history ---

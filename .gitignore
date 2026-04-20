@@ -8,3 +8,5 @@ chroma_db/
 .ipynb_checkpoints/
 *.bin
 *.pt
+*.pdf
+*.txt
