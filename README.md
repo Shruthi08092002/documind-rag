@@ -58,6 +58,7 @@ Evaluated across 20 questions with ground truth answers from an academic paper o
 
 ## Project Structure
 
+```
 documind-rag/
 ├── src/
 │   ├── ingestor.py         # Document loading and chunking
@@ -72,6 +73,7 @@ documind-rag/
 │   └── raw/                # Drop documents here
 ├── app.py                  # Streamlit chat UI
 └── requirements.txt
+```
 
 
 
