@@ -4,13 +4,11 @@ A fully local, end-to-end Retrieval-Augmented Generation (RAG) system that inges
 
 Built with zero API costs — everything runs on your machine.
 
----
 
 ## Demo
 
 > Upload any PDF → Ask questions in plain English → Get grounded answers with source citations
 
----
 
 ## What it does
 
@@ -22,7 +20,6 @@ Built with zero API costs — everything runs on your machine.
 - Evaluates pipeline quality across faithfulness, answer relevancy, and context recall
 - Serves a Streamlit chat UI with source citations and document upload
 
----
 
 ## Architecture
 
@@ -30,7 +27,6 @@ PDF/TXT → Ingestor → Chunker → Embedder → ChromaDB
 ↓
 User Question → Retriever → Generator (Mistral) → Answer + Sources
 
----
 
 ## Tech Stack
 
@@ -44,7 +40,7 @@ User Question → Retriever → Generator (Mistral) → Answer + Sources
 | UI | Streamlit |
 | Language | Python 3.12 |
 
----
+
 
 ## Evaluation Results
 
@@ -58,7 +54,7 @@ Evaluated across 20 questions with ground truth answers from an academic paper o
 
 **Key finding:** Increasing retrieved chunks from k=3 to k=5 improved context recall by 7.1% and faithfulness by 5.4%. MMR retrieval underperformed on this dense academic corpus because diversity hurt more than it helped.
 
----
+
 
 ## Project Structure
 
@@ -78,7 +74,7 @@ documind-rag/
 └── requirements.txt
 
 
----
+
 
 ## Setup
 
@@ -128,7 +124,7 @@ python -m tests.evaluator
 python -m tests.run_experiments
 ```
 
----
+
 
 ## Key Design Decisions
 
@@ -140,7 +136,6 @@ python -m tests.run_experiments
 
 **Why k=5?** Evaluation showed 7.1% recall improvement over k=3 with no faithfulness penalty.
 
----
 
 ## Limitations
 
@@ -148,7 +143,6 @@ python -m tests.run_experiments
 - Mistral 7B on CPU generates answers in 30-60 seconds
 - RAGAS parallel scoring requires a faster LLM for evaluation
 
----
 
 ## Author
 
